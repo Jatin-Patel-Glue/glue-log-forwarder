@@ -6,7 +6,6 @@ import RefreshIcon from '../assets/refresh_icon.png'
 const Header = () => {
     const handleHomeClick = () => {
         console.log("E")
-
     }
     return (
         <div className='header'>
