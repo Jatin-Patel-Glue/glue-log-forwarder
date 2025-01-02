@@ -157,10 +157,12 @@ const MainContent = ({ activeItem, toggleLogs, onMenuItemClick }) => {
               >
                 Set Date & Time
               </button>
+            
              
               {isDateTimeVisible && (
                 <div className="absolute top-0 right-0 mt-12">
                   <DatePicker
+                    placeholderText="MM/DD/YYYY, HH:MM"
                     selected={selectedDate}
                     onChange={handleDateChange}
                     showTimeSelect
