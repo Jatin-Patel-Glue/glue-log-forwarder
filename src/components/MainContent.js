@@ -32,25 +32,25 @@ const MainContent = ({ activeItem, toggleLogs, onMenuItemClick }) => {
   };
 
   return (
-    <div className="p-4">
+    <div className="p-4" >
       
       {activeItem === "Dashboard" && (
         <>
           
-          <div className="flex flex-row space-x-4 mb-4">
-            <Card height="h-[220px]" width="w-[377px]" />
-            <Card height="h-[220px]" width="w-[450px]" />
+          <div className="flex flex-row space-x-4 mb-4 h-[40vh]">
+            <Card height= "h-full" width="w-full" />
+            <Card height="h-full" width="w-full" />
           </div>
       
           
-          <div className="flex flex-row space-x-4">
+          <div className="flex flex-row space-x-4 h-[40vh]">
             
-            <Card height="h-[370px]" width="w-[470px]" />
+            <Card height="h-full" width="w-2/3 " />
       
             
-            <div className="flex flex-col">
-              <Card height="h-[175px]" width="w-[357px]" />
-              <Card height="h-[175px]" width="w-[357px]" /> 
+            <div className="flex flex-col w-1/3 ">
+              <Card height="h-full" width="w-full" />
+              <Card height="h-full" width="w-full" /> 
             </div>
           </div>
         </>
@@ -157,10 +157,12 @@ const MainContent = ({ activeItem, toggleLogs, onMenuItemClick }) => {
               >
                 Set Date & Time
               </button>
+            
              
               {isDateTimeVisible && (
                 <div className="absolute top-0 right-0 mt-12">
                   <DatePicker
+                    placeholderText="MM/DD/YYYY, HH:MM"
                     selected={selectedDate}
                     onChange={handleDateChange}
                     showTimeSelect
