@@ -6,11 +6,10 @@
     padding: 20px 30px;
     color: white;
 
-    .home {
+    .home-button {
         font-family: Inter;
         font-size: 30px;
         font-weight: 700;
-        line-height: 36.31px;
         text-align: center;
         text-underline-position: from-font;
         text-decoration-skip-ink: none;
