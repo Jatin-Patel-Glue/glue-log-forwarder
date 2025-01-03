@@ -30,7 +30,7 @@ function App() {
           activeItem={activeItem} 
           showSubMenu={showSubMenu}  
         />
-        <div className="ml-40  w-full">
+        <div className="ml-4 w-[85vw]">
           <MainContent 
             activeItem={activeItem} 
             onMenuItemClick={handleMenuItemClick} 
