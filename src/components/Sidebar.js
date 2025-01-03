@@ -1,7 +1,7 @@
 const Sidebar = ({ onMenuItemClick, activeItem, showSubMenu }) => {
     return (
-      <div className="fixed top-[80px] left-5 h-[calc(100vh-99px-5px)] w-30 bg-sidebarBg rounded-lg shadow-lg p-4 z-10">
-        <ul className="text-sidebarText">
+      <div className="relative my-4 left-5 h-100 w-[15vw] bg-sidebarBg rounded-lg shadow-lg z-10">
+        <ul className="text-sidebarText p-4">
           <li
             className={`mb-4 hover:text-black cursor-pointer ${activeItem === "Dashboard" ? "text-black" : ""}`}
             onClick={() => onMenuItemClick("Dashboard")}

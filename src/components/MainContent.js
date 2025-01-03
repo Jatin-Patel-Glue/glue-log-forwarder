@@ -45,10 +45,10 @@ const MainContent = ({ activeItem, toggleLogs, onMenuItemClick }) => {
           
           <div className="flex flex-row space-x-4 h-[40vh]">
             
-            <Card height="h-full" width="w-2/3 " />
+            <Card height="h-full" width="w-2/3" />
       
             
-            <div className="flex flex-col w-1/3 ">
+            <div className="flex flex-col w-1/3 gap-4">
               <Card height="h-full" width="w-full" />
               <Card height="h-full" width="w-full" /> 
             </div>

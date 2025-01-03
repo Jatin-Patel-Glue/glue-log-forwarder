@@ -1,0 +1,21 @@
+.header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    background-image: url('../assets//header-background.jpg');
+    padding: 20px 30px;
+    color: white;
+
+    .home-button {
+        font-family: Inter;
+        font-size: 30px;
+        font-weight: 700;
+        text-align: center;
+        text-underline-position: from-font;
+        text-decoration-skip-ink: none;
+    }
+
+    .refresh {
+        background-color: white;
+    }
+}

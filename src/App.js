@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import './App.css';
 import Sidebar from './components/Sidebar';
 import MainContent from './components/MainContent';
+import Header from './components/Header'
 
 function App() {
   const [activeItem, setActiveItem] = useState('Dashboard');
@@ -18,9 +19,10 @@ function App() {
 
   return (
     <div className="flex flex-col">
-      <div className="h-16 bg-blue-500 text-white flex items-center justify-center">
+        <Header />
+      {/* <div className="h-16 bg-blue-500 text-white flex items-center justify-center">
         <h1 className="text-2xl font-bold">Header Banner</h1>
-      </div>
+      </div> */}
 
       <div className="flex flex-grow overflow-hidden">
         <Sidebar 
@@ -28,6 +30,7 @@ function App() {
           activeItem={activeItem} 
           showSubMenu={showSubMenu}  
         />
+//         <div className="ml-5 w-[85vw]">
         <div className="flex-grow overflow-auto ml-10 sm:ml-40 w-full">
           <MainContent 
             activeItem={activeItem} 
