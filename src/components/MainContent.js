@@ -78,7 +78,7 @@ const MainContent = ({ activeItem, toggleLogs, onMenuItemClick }) => {
 
             <button
                 className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 w-full text-left"
-                onClick={() => setShowExtraCard(true)}
+                onClick={() => setShowExtraCard(true)} 
             >
                 APPLICATION 2 PRESS CHECK
             </button>
@@ -121,6 +121,11 @@ const MainContent = ({ activeItem, toggleLogs, onMenuItemClick }) => {
       )}
 
       {activeItem === "Logs" && (
+
+        <>
+        <div className="flex flex-grow">
+
+        
         <Card height="h-[calc(100vh-99px)]" width="w-[1000px]">
           <div className="flex flex-row items-center space-x-8 mb-16">
             
@@ -128,7 +133,7 @@ const MainContent = ({ activeItem, toggleLogs, onMenuItemClick }) => {
             <p className="text-red-500">Errors</p>
 
             
-            <div className="flex-grow max-w-[500px]">
+            <div className="flex-grow max-w-[800px]">
               <SearchBar
                 placeholder="Search Logs..."
                 onChange={handleSearchChange}
@@ -179,6 +184,11 @@ const MainContent = ({ activeItem, toggleLogs, onMenuItemClick }) => {
             <p className="text-center text-gray-500">No logs available.</p>
           </div>
         </Card>
+        </div>
+
+        
+
+        </>
       )}
     </div>
   );

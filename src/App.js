@@ -24,13 +24,14 @@ function App() {
         <h1 className="text-2xl font-bold">Header Banner</h1>
       </div> */}
 
-      <div className="flex">
+      <div className="flex flex-grow overflow-hidden">
         <Sidebar 
           onMenuItemClick={handleMenuItemClick} 
           activeItem={activeItem} 
           showSubMenu={showSubMenu}  
         />
-        <div className="ml-5 w-[85vw]">
+//         <div className="ml-5 w-[85vw]">
+        <div className="flex-grow overflow-auto ml-10 sm:ml-40 w-full">
           <MainContent 
             activeItem={activeItem} 
             onMenuItemClick={handleMenuItemClick} 
