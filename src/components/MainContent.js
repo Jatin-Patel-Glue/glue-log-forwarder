@@ -57,9 +57,9 @@ const MainContent = ({ activeItem, toggleLogs, onMenuItemClick }) => {
       )}
 
       {activeItem === "Applications" && (
-        <div className="flex flex-row space-x-4">
+        <div className="flex flex-row space-x-4 h-[80vh]">
          
-          <Card height="h-[calc(100vh-99px)]" width="w-[600px]">
+          <Card height="h-full" width="w-full">
             <div className="flex flex-row space-x-24">
                 <h1>Application Name</h1>
                 <h1>Status</h1>
@@ -86,7 +86,7 @@ const MainContent = ({ activeItem, toggleLogs, onMenuItemClick }) => {
           </Card>
 
           {showExtraCard && (
-            <Card width="w-[500px]">
+            <Card width="w-full" height="h-full">
               <div className="flex flex-row space-x-24">
                 <h1>Logs</h1>
                 <h1>Size</h1>
@@ -123,17 +123,17 @@ const MainContent = ({ activeItem, toggleLogs, onMenuItemClick }) => {
       {activeItem === "Logs" && (
 
         <>
-        <div className="flex flex-grow">
+        <div className="flex flex-grow h-[80vh]">
 
         
-        <Card height="h-[calc(100vh-99px)]" width="w-[1000px]">
+        <Card height="h-full" width="w-full">
           <div className="flex flex-row items-center space-x-8 mb-16">
             
             <p>Advreservation</p>
             <p className="text-red-500">Errors</p>
 
             
-            <div className="flex-grow max-w-[800px]">
+            <div className="flex-grow max-w-[65vw]">
               <SearchBar
                 placeholder="Search Logs..."
                 onChange={handleSearchChange}

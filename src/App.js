@@ -20,9 +20,6 @@ function App() {
   return (
     <div className="flex flex-col">
         <Header />
-      {/* <div className="h-16 bg-blue-500 text-white flex items-center justify-center">
-        <h1 className="text-2xl font-bold">Header Banner</h1>
-      </div> */}
 
       <div className="flex flex-grow overflow-hidden">
         <Sidebar 
@@ -30,8 +27,7 @@ function App() {
           activeItem={activeItem} 
           showSubMenu={showSubMenu}  
         />
-//         <div className="ml-5 w-[85vw]">
-        <div className="flex-grow overflow-auto ml-10 sm:ml-40 w-full">
+        <div className="ml-5 w-[85vw]">
           <MainContent 
             activeItem={activeItem} 
             onMenuItemClick={handleMenuItemClick} 
