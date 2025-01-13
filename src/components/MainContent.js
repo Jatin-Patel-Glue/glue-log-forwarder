@@ -2,14 +2,38 @@ import React, { useState } from "react";
 import Card from "./Sections"; 
 import SearchBar from "./SearchBar";
 import DatePicker from "react-datepicker";
+import GetData from "./GetData";
 import "react-datepicker/dist/react-datepicker.css";
+import { useEffect } from "react";
 
 const MainContent = ({ activeItem, toggleLogs, onMenuItemClick }) => {
   const [showExtraCard, setShowExtraCard] = useState(false);
+  const [activeApplication, setActiveApplication] = useState(null);
   const [activeLog, setActiveLog] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedOption, setSelectedOption] = useState("");
+  const [groupData, setGroupData] = useState([]);
+  const [URL, setURL] = useState("");
+
+  const [logFiles, setLogFiles] = useState([]);
+
+  const [logs, setLogs] = useState([]);
+
+  
+  
+ 
+  useEffect(() => {
+    if (activeItem === "Applications") {
+        setURL("https://f4c0c0ba-64e8-4d3a-a219-2b339ba7ed52.mock.pstmn.io/glf/getLogFiles");
+    }
+    else if (activeItem === "Logs"){
+      setURL(`https://f4c0c0ba-64e8-4d3a-a219-2b339ba7ed52.mock.pstmn.io/glf/filterContent?file=${activeLog}&search=.*&position=&maxResults=40&displayOutput=asc&ignoreCase=true`)
+    }
+}, [activeItem]); 
+  GetData(URL, setGroupData, "fileNames");
+  GetData(URL, setLogFiles, "logFiles");
+  GetData(URL, setLogs, "Logs");
   
   
   const [isDateTimeVisible, setIsDateTimeVisible] = useState(false);
@@ -26,6 +50,16 @@ const MainContent = ({ activeItem, toggleLogs, onMenuItemClick }) => {
     setSelectedOption(e.target.value);
   };
 
+  const handleGroupClick = (groupName) => {
+    setActiveApplication(groupName);
+    setShowExtraCard(true);
+  };
+
+   const handleLogFileClick = (logFile) => {
+    setActiveLog(logFile);
+
+   }
+
   
   const toggleDateTimeVisibility = () => {
     setIsDateTimeVisible((prevState) => !prevState);
@@ -35,8 +69,7 @@ const MainContent = ({ activeItem, toggleLogs, onMenuItemClick }) => {
     <div className="p-4" >
       
       {activeItem === "Dashboard" && (
-        <>
-          
+        <>         
           <div className="flex flex-row space-x-4 mb-4 h-[40vh]">
             <Card height= "h-full" width="w-full" />
             <Card height="h-full" width="w-full" />
@@ -56,66 +89,89 @@ const MainContent = ({ activeItem, toggleLogs, onMenuItemClick }) => {
         </>
       )}
 
-      {activeItem === "Applications" && (
+      {(activeItem === "Applications") && (
+
         <div className="flex flex-row space-x-4 h-[80vh]">
          
-          <Card height="h-full" width="w-full">
-            <div className="flex flex-row space-x-24">
-                <h1>Application Name</h1>
-                <h1>Status</h1>
-                <h1>Last Modified On</h1>
+         <Card height="h-full" width="w-full">
+            {/* Header Section */}
+            <div className="grid grid-cols-3 gap-4 items-center font-bold border-b pb-2">
+              <h1>Application Name</h1>
+              <h1 className="text-center">Status</h1>
+              <h1 className="text-right">Last Modified On</h1>
             </div>
 
-            <br></br>
+            <br />
 
+            {/* Content Section */}
             <div className="flex flex-col space-y-4">
-            <button
-                className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 w-full text-left"
-                onClick={() => setShowExtraCard(true)}
-            >
-                APPLICATION PRESS CHECK
-            </button>
+              {groupData.map((item, index) => (
+                <div key={index} className="grid grid-cols-3 gap-4 items-center">
+                  {/* Application Name Button */}
+                  <button
+                    className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 text-left"
+                    onClick={() => {
+                      setShowExtraCard(true);
+                      handleGroupClick(item.groupName); // Call the handleGroupClick function with the group name
+                    }}
+                  >
+                    {item.groupName}
+                  </button>
 
-            <button
-                className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 w-full text-left"
-                onClick={() => setShowExtraCard(true)} 
-            >
-                APPLICATION 2 PRESS CHECK
-            </button>
+                  {/* Empty Status Column */}
+                  <div></div>
+
+                  {/* Last Modified Date */}
+                  <div className="text-right">
+                    <p>{new Date(parseInt(item.lastModified, 10)).toLocaleString()}</p>
+                  </div>
+                </div>
+              ))}
             </div>
           </Card>
 
+         
+
           {showExtraCard && (
             <Card width="w-full" height="h-full">
-              <div className="flex flex-row space-x-24">
-                <h1>Logs</h1>
-                <h1>Size</h1>
-                <h1>Last Modified On</h1>
-              </div>
-              <br></br>
-
-              <div className="flex flex-col space-y-4">
-                <button
-                  className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 w-full text-left"
-                  onClick={() => {
-                                 
-                    onMenuItemClick("Logs");  
-                  }}
-                >
-                  LOG ENTRY 1
-                </button>
-
-                <button
-                  className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 w-full text-left"
-                  onClick={() => {
-                               
-                    onMenuItemClick("Logs");  
-                  }}
-                >
-                  LOG ENTRY 2
-                </button>
-              </div>
-            </Card>
+            <div className="grid grid-cols-3 gap-4 items-center font-bold border-b pb-2">
+              <h1>Logs</h1>
+              <h1 className="text-center">Size</h1>
+              <h1 className="text-right">Last Modified On</h1>
+            </div>
+            <br />
+          
+            {/* Log Files */}
+            <div className="flex flex-col space-y-4">
+              {logFiles
+                .filter((log) => log.groupName === activeApplication) 
+                .flatMap((log) => log.files) 
+                .map((file, index) => (
+                  <div key={index} className="grid grid-cols-3 gap-4 items-center">
+                    {/* Log File Button */}
+                    <button
+                      className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 text-center"
+                      onClick={() => {
+                        onMenuItemClick("Logs");
+                        handleLogFileClick(file.filename);
+                      }}
+                    >
+                      {file.filename}
+                    </button>
+          
+                    {/* File Size */}
+                    <div className="text-center">
+                      <p>{file.sizeInBytes} bytes</p>
+                    </div>
+          
+                    {/* Last Modified */}
+                    <div className="text-right">
+                      <p>{new Date(parseInt(file.lastModified, 10)).toLocaleString()}</p>
+                    </div>
+                  </div>
+                ))}
+            </div>
+          </Card>
           )}
         </div>
       )}
@@ -181,7 +237,14 @@ const MainContent = ({ activeItem, toggleLogs, onMenuItemClick }) => {
 
           
           <div className="p-4">
-            <p className="text-center text-gray-500">No logs available.</p>
+          {logs.map((log, index) => (
+          <div
+            key={index}
+            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 w-full text-left"
+          >
+            {log.line} {/* Render the log line */}
+          </div>
+        ))}
           </div>
         </Card>
         </div>
