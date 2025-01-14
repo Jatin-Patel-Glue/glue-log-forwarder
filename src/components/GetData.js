@@ -4,7 +4,13 @@ const GetData = (URL, setData, filter) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(URL);
+        const response = await fetch(URL, {
+          method: "GET", // or "POST", depending on your request
+          headers: {
+            "Content-Type": "application/json", // Optional if you're working with JSON
+            "Authorization": "Basic QWRtaW5pc3RyYXRvcjptYW5hZ2U=" // Your Basic Auth token here
+          },
+        });
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
         }

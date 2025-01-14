@@ -23,17 +23,38 @@ const MainContent = ({ activeItem, toggleLogs, onMenuItemClick }) => {
   
   
  
+
+
   useEffect(() => {
     if (activeItem === "Applications") {
-        setURL("https://f4c0c0ba-64e8-4d3a-a219-2b339ba7ed52.mock.pstmn.io/glf/getLogFiles");
+        setURL("/glf/getLogFiles");
     }
     else if (activeItem === "Logs"){
-      setURL(`https://f4c0c0ba-64e8-4d3a-a219-2b339ba7ed52.mock.pstmn.io/glf/filterContent?file=${activeLog}&search=.*&position=&maxResults=40&displayOutput=asc&ignoreCase=true`)
+      console.log(activeLog);
+      setURL(`/glf/filterContent?file=${activeLog}&search=.*&position=&maxResults=40&displayOutput=asc&ignoreCase=true`);
     }
-}, [activeItem]); 
+    else if (selectedOption){
+      console.log(selectedOption)
+      setURL(`/glf/filterContent?file=${selectedOption}&search=.*&position=&maxResults=40&displayOutput=asc&ignoreCase=true`)
+    }
+}, [activeItem], [selectedOption]);
   GetData(URL, setGroupData, "fileNames");
   GetData(URL, setLogFiles, "logFiles");
   GetData(URL, setLogs, "Logs");
+  
+  // useEffect(() => {
+  //   // Only trigger the GET request if selectedOption changes
+  //   if (selectedOption) {
+  //     // Update URL for the new GET request based on selectedOption
+  //     const newURL = `/glf/filterContent?file=${selectedOption}&search=.*&position=&maxResults=40&displayOutput=asc&ignoreCase=true`;
+  
+  //     // Call GetData to fetch new data based on the new URL
+  //     GetData(newURL, setLogs, "Logs");
+  //   }
+  // }, [selectedOption]); // This effect runs whenever selectedOption changes
+  
+  
+ 
   
   
   const [isDateTimeVisible, setIsDateTimeVisible] = useState(false);
@@ -47,8 +68,14 @@ const MainContent = ({ activeItem, toggleLogs, onMenuItemClick }) => {
   };
 
   const handleSelectChange = (e) => {
-    setSelectedOption(e.target.value);
+    const selectedFilename = e.target.value; // Get the selected filename
+    setSelectedOption(selectedFilename); // Update the selected option state
+  
+    // If needed, you can trigger other actions here, like updating the logs or fetching data
+    // For example, you might want to update the URL or call a function to fetch logs for the selected file
+    handleLogFileClick(selectedFilename); // Trigger additional logic like fetching logs for the selected file
   };
+  
 
   const handleGroupClick = (groupName) => {
     setActiveApplication(groupName);
@@ -109,7 +136,7 @@ const MainContent = ({ activeItem, toggleLogs, onMenuItemClick }) => {
                 <div key={index} className="grid grid-cols-3 gap-4 items-center">
                   {/* Application Name Button */}
                   <button
-                    className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 text-left"
+                    className="bg-gray-300 text-black px-4 py-2 rounded hover:bg-blue-600 text-left"
                     onClick={() => {
                       setShowExtraCard(true);
                       handleGroupClick(item.groupName); // Call the handleGroupClick function with the group name
@@ -150,7 +177,7 @@ const MainContent = ({ activeItem, toggleLogs, onMenuItemClick }) => {
                   <div key={index} className="grid grid-cols-3 gap-4 items-center">
                     {/* Log File Button */}
                     <button
-                      className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 text-center"
+                      className="bg-gray-300 text-black px-4 py-2 rounded hover:bg-blue-600 text-center"
                       onClick={() => {
                         onMenuItemClick("Logs");
                         handleLogFileClick(file.filename);
@@ -199,16 +226,22 @@ const MainContent = ({ activeItem, toggleLogs, onMenuItemClick }) => {
             
             <div className="relative">
               <select
-                value={selectedOption}
-                onChange={handleSelectChange}
+                value={selectedOption} // Bind selectedOption to the dropdown value
+                onChange={handleSelectChange} // Call handleSelectChange when a new option is selected
                 className="bg-gray-300 text-gray-700 px-4 py-2 rounded"
               >
-                <option value="package1">Package 1</option>
-                <option value="pakcage2">Package 2</option>
-                <option value="package3">Package 3</option>
-                <option value="package4">Package 4</option>
+                {logFiles
+                  .filter((log) => log.groupName === activeApplication) // Filter logs by active application
+                  .flatMap((log) => log.files) // Extract files from the selected log
+                  .map((file, index) => (
+                    <option key={index} value={file.filename}>
+                      {file.filename} {/* Display the filename in the dropdown */}
+                    </option>
+                  ))}
+                {logFiles.length === 0 && <option>No files available</option>} {/* Handle no files available */}
               </select>
             </div>
+
 
             
             <div className="relative">
@@ -240,7 +273,7 @@ const MainContent = ({ activeItem, toggleLogs, onMenuItemClick }) => {
           {logs.map((log, index) => (
           <div
             key={index}
-            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 w-full text-left"
+            className="bg-white text-black border border-gray-300 px-4 py-2 rounded w-full text-left"
           >
             {log.line} {/* Render the log line */}
           </div>
