@@ -191,7 +191,7 @@ const MainContent = ({ activeItem, toggleLogs, onMenuItemClick }) => {
         <Card height="h-full" width="w-full">
           <div className="flex flex-row items-center space-x-8 mb-16">
            
-            <p>Advreservation</p>
+            <p>{activeLog}</p>
             <p className="text-red-500">Errors</p>
  
            
