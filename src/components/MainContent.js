@@ -15,6 +15,7 @@ const MainContent = ({ activeItem, toggleLogs, onMenuItemClick }) => {
   const [groupData, setGroupData] = useState([]);
   const [URL, setURL] = useState("");
   const [logFiles, setLogFiles] = useState([]);
+  const [currentRequest, setCurrentRequest] = useState([]);
  
   const [logs, setLogs] = useState([]);
  
@@ -24,14 +25,9 @@ const MainContent = ({ activeItem, toggleLogs, onMenuItemClick }) => {
   useEffect(() => {
     if (activeItem === "Applications") {
       setURL("/glf/getLogFiles");
-    } else if (activeItem === "Logs") {
+    } else if ((activeItem === "Logs") || activeLog) {
       console.log(activeLog)
       setURL(`/glf/filterContent?file=${activeLog}&search=.*&position=&displayOutput=asc&ignoreCase=true`
-      );
-    } else if (activeLog) {
-      console.log(activeLog)
-      setURL(
-        `/glf/filterContent?file=${activeLog}&search=.*&position=&displayOutput=asc&ignoreCase=true`
       );
     }
   }, [activeItem, activeLog]); // Ensure correct dependencies
@@ -42,6 +38,15 @@ const MainContent = ({ activeItem, toggleLogs, onMenuItemClick }) => {
  
  
   const [isDateTimeVisible, setIsDateTimeVisible] = useState(false);
+
+  const splitLogLine = (line) => {
+    const splitLine = line.split(" ");
+    const log = splitLine.slice(5, (splitLine.length - 1)).join(" ");
+    const finalLine = (splitLine.slice(0, 5));
+    finalLine.push(log);
+
+    return finalLine;
+  }
  
   const handleSearchChange = (e) => {
     setSearchQuery(e.target.value);
@@ -191,7 +196,7 @@ const MainContent = ({ activeItem, toggleLogs, onMenuItemClick }) => {
         <Card height="h-full" width="w-full">
           <div className="flex flex-row items-center space-x-8 mb-16">
            
-            <p>{activeLog}</p>
+            <p>{activeApplication}</p>
             <p className="text-red-500">Errors</p>
  
            
@@ -246,25 +251,36 @@ const MainContent = ({ activeItem, toggleLogs, onMenuItemClick }) => {
               )}
             </div>
           </div>
- 
-         
           <div className="p-4">
           {logs.map((log, index) => (
           <div
             key={index}
             className="bg-white text-black border border-gray-300 px-4 py-2 rounded w-full text-left pb-3"
           >
-            {log.line} {/* Render the log line */}
-
+            
+            {/* {log.line} Render the log line */}
+            <div className = "flex flex-col p-2">
+              <div className = "errorType">
+                Error type: {splitLogLine(log.line)[2]}
+              </div>
+              <div className = "date">
+                Timestamp: {splitLogLine(log.line)[0] + " " + splitLogLine(log.line)[1]}
+              </div>
+              <div className = "correlationId">
+                Correlation ID: {splitLogLine(log.line)[3]}
+              </div>
+              <div className = "package">
+                Package name: {splitLogLine(log.line)[4]}
+              </div>
+              <div className = "logMessage">
+                Message: {splitLogLine(log.line)[5]}
+              </div>
+            </div>
           </div>
-
         ))}
           </div>
         </Card>
         </div>
- 
-       
- 
         </>
       )}
     </div>
