@@ -16,6 +16,9 @@ const MainContent = ({ activeItem, toggleLogs, onMenuItemClick }) => {
   const [URL, setURL] = useState("");
   const [logFiles, setLogFiles] = useState([]);
   const [currentRequest, setCurrentRequest] = useState([]);
+  const [filteredLogs, setFilteredLogs] = useState([]);
+  const [numError, setNumErrors] = useState("");
+
  
   const [logs, setLogs] = useState([]);
  
@@ -31,6 +34,11 @@ const MainContent = ({ activeItem, toggleLogs, onMenuItemClick }) => {
       );
     }
   }, [activeItem, activeLog]); // Ensure correct dependencies
+
+  useEffect(() => {
+    setFilteredLogs(logs); // Initialize filteredLogs with all logs when logs change
+  }, [logs]); // Run this effect whenever logs updates
+  
  
   GetData(URL, setGroupData, "fileNames");
   GetData(URL, setLogFiles, "logFiles");
@@ -49,13 +57,61 @@ const MainContent = ({ activeItem, toggleLogs, onMenuItemClick }) => {
   }
  
   const handleSearchChange = (e) => {
-    setSearchQuery(e.target.value);
+    const query = e.target.value.toLowerCase();
+    setSearchQuery(query);
+  
+    const terms = query.split(/[\s,]+/).filter(Boolean);
+  
+    const filtered = logs.filter((log) => {
+      const [date, time , logType, correlationId, packageName] = splitLogLine(log.line);
+  
+      return terms.every((term) =>
+        logType.toLowerCase().includes(term) ||
+        date.toLowerCase().includes(term) ||
+        time.toLowerCase().includes(term) ||
+        correlationId.toLowerCase().includes(term) ||
+        packageName.toLowerCase().includes(term)
+      );
+    });
+  
+    setFilteredLogs(filtered);
   };
+  
+  
+  
+  
  
   const handleDateChange = (date) => {
     setSelectedDate(date);
   };
  
+  const highlightSearch = (text, query) => {
+    // Split the query into individual terms
+    const terms = query.split(/[\s,]+/).filter(Boolean); // This will split by spaces or commas
+  
+    // Create a case-insensitive regex to search for the terms
+    const regex = new RegExp(`(${terms.join('|')})`, 'gi');
+  
+    // Split the text by matching the query terms, and map over the parts to create JSX elements
+    return text.split(regex).map((part, index) => {
+      // If the part matches a query term, highlight it
+      if (terms.some((term) => term.toLowerCase() === part.toLowerCase())) {
+        return (
+          <span key={index} style={{ color: 'blue', fontWeight: 'bold' }}>
+            {part}
+          </span>
+        );
+      } else {
+        // Otherwise, just return the part as it is
+        return <span key={index}>{part}</span>;
+      }
+    });
+  };
+  
+  
+  
+  
+  
  
   const handleGroupClick = (groupName) => {
     setActiveApplication(groupName);
@@ -72,9 +128,9 @@ const MainContent = ({ activeItem, toggleLogs, onMenuItemClick }) => {
   };
  
  
-  const toggleDateTimeVisibility = () => {
-    setIsDateTimeVisible((prevState) => !prevState);
-  };
+  // const toggleDateTimeVisibility = () => {
+  //   setIsDateTimeVisible((prevState) => !prevState);
+  // };
  
   return (
     <div className="p-4" >
@@ -120,7 +176,7 @@ const MainContent = ({ activeItem, toggleLogs, onMenuItemClick }) => {
                 <div key={index} className="grid grid-cols-3 gap-4 items-center">
                   {/* Application Name Button */}
                   <button
-                    className="bg-gray-300 text-black px-4 py-2 rounded hover:bg-blue-600 text-left"
+                    className="bg-gray-300 text-black px-4 py-2 rounded hover:bg-blue-600 text-center overflow-hidden"
                     onClick={() => {
                       setShowExtraCard(true);
                       handleGroupClick(item.groupName); // Call the handleGroupClick function with the group name
@@ -161,7 +217,7 @@ const MainContent = ({ activeItem, toggleLogs, onMenuItemClick }) => {
                   <div key={index} className="grid grid-cols-3 gap-4 items-center">
                     {/* Log File Button */}
                     <button
-                      className="bg-gray-300 text-black px-4 py-2 rounded hover:bg-blue-600 text-center"
+                      className="bg-gray-300 text-black px-4 py-2 rounded hover:bg-blue-600 text-center overflow-hidden"
                       onClick={() => {
                         onMenuItemClick("Logs");
                         handleLogFileClick(file.filename);
@@ -202,7 +258,7 @@ const MainContent = ({ activeItem, toggleLogs, onMenuItemClick }) => {
            
             <div className="flex-grow max-w-[65vw]">
               <SearchBar
-                placeholder="Search Logs..."
+                placeholder="Search Log type, Correltation ID, Package Name, Date..."
                 onChange={handleSearchChange}
               />
             </div>
@@ -228,7 +284,7 @@ const MainContent = ({ activeItem, toggleLogs, onMenuItemClick }) => {
  
  
            
-            <div className="relative">
+            {/* <div className="relative">
               <button
                 onClick={toggleDateTimeVisibility}
                 className="bg-gray-300 text-gray-700 px-4 py-2 rounded"
@@ -249,36 +305,47 @@ const MainContent = ({ activeItem, toggleLogs, onMenuItemClick }) => {
                   />
                 </div>
               )}
-            </div>
+            </div> */}
           </div>
           <div className="p-4">
-          {logs.map((log, index) => (
-          <div
-            key={index}
-            className="bg-white text-black border border-gray-300 px-4 py-2 rounded w-full text-left pb-3"
-          >
-            
-            {/* {log.line} Render the log line */}
-            <div className = "flex flex-col p-2">
-              <div className = "errorType">
-                Error type: {splitLogLine(log.line)[2]}
-              </div>
-              <div className = "date">
-                Timestamp: {splitLogLine(log.line)[0] + " " + splitLogLine(log.line)[1]}
-              </div>
-              <div className = "correlationId">
-                Correlation ID: {splitLogLine(log.line)[3]}
-              </div>
-              <div className = "package">
-                Package name: {splitLogLine(log.line)[4]}
-              </div>
-              <div className = "logMessage">
-                Message: {splitLogLine(log.line)[5]}
-              </div>
-            </div>
+            {(searchQuery ? filteredLogs : logs).map((log, index) => {
+              const [date, time , logType, correlationId, packageName, message] = splitLogLine(log.line);
+             
+
+              return (
+                <div
+                  key={index}
+                  className="bg-white text-black border border-gray-300 px-4 py-2 rounded w-full text-left pb-3"
+                >
+                  <div className="flex flex-col p-2">
+                    <div className="logType">
+                      Log type:{" "}
+                      {highlightSearch(logType, searchQuery)}
+                    
+                    </div>
+                    <div className = "date">
+                      Timestamp:{" "}
+                      {highlightSearch(date, searchQuery)}{" "}{highlightSearch(time, searchQuery)}
+                    </div>
+
+                    <div className="correlationId">
+                      Correlation ID:{" "}
+                     {highlightSearch(correlationId, searchQuery)}  
+                    
+                    </div>
+                    <div className="package">
+                      Package name:{" "}
+                      {highlightSearch(packageName, searchQuery)}
+                      
+                  
+                    </div>
+                    <div className="logMessage">Message:{message}</div>
+                  </div>
+                </div>
+              );
+            })}
           </div>
-        ))}
-          </div>
+
         </Card>
         </div>
         </>
