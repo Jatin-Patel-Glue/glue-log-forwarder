@@ -1,18 +1,24 @@
 import { useEffect } from "react";
 
 const GetData = (URL, setData, filter) => {
+  let apiStatus=false;
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await fetch(URL, {
           method: "GET", // or "POST", depending on your request
           headers: {
-            "Content-Type": "application/json", // Optional if you're working with JSON
+            "Content-Type": "application/json", 
             "Authorization": "Basic QWRtaW5pc3RyYXRvcjptYW5hZ2U=" // Your Basic Auth token here
           },
         });
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        if (response.status >= 200 && response.status<=299){
+          apiStatus = true;
+        } else{
+          apiStatus = false;
         }
         const data = await response.json();
 
@@ -21,6 +27,8 @@ const GetData = (URL, setData, filter) => {
             filteredData = data.filesByGroup.map(group => ({
                 groupName: group.groupName,
                 lastModified: group.files[0]?.lastModified || "N/A",
+                status: apiStatus
+                // status: group.groupName == "appauthenticate" || group.groupName=="advreservation" ? false : apiStatus
             }));
         } 
         else if (filter === "logFiles") {

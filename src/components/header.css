@@ -3,17 +3,20 @@
     flex-direction: row;
     justify-content: space-between;
     background-image: url('../assets//header-background.jpg');
+    background-position: bottom;
     padding: 20px 30px;
     color: white;
 
     .home-button {
-        font-family: Inter;
+        font-family: 'Inter', sans-serif; /* Use Inter font, fallback to sans-serif */
         font-size: 30px;
         font-weight: 700;
-        text-align: center;
+        line-height: 36.31px; /* Exact line height */
+        text-align: center; /* Center text horizontally */
         text-underline-position: from-font;
         text-decoration-skip-ink: none;
     }
+    
 
     .refresh {
         background-color: white;

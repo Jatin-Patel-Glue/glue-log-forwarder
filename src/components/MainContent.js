@@ -5,6 +5,8 @@ import DatePicker from "react-datepicker";
 import GetData from "./GetData";
 import "react-datepicker/dist/react-datepicker.css";
 import { useEffect } from "react";
+import { HiCheck } from "react-icons/hi";
+import { HiXMark } from "react-icons/hi2";
  
 const MainContent = ({ activeItem, toggleLogs, onMenuItemClick }) => {
   const [showExtraCard, setShowExtraCard] = useState(false);
@@ -18,6 +20,7 @@ const MainContent = ({ activeItem, toggleLogs, onMenuItemClick }) => {
   const [currentRequest, setCurrentRequest] = useState([]);
   const [filteredLogs, setFilteredLogs] = useState([]);
   const [numError, setNumErrors] = useState("");
+  const [recurringErrors, setRecurringErrors] = useState([]); 
 
  
   const [logs, setLogs] = useState([]);
@@ -34,6 +37,11 @@ const MainContent = ({ activeItem, toggleLogs, onMenuItemClick }) => {
       );
     }
   }, [activeItem, activeLog]); // Ensure correct dependencies
+
+  useEffect(() => {
+    analyzeRecurringErrors(logs);
+  }, [logs]); // Run this effect whenever logs updates
+
 
   useEffect(() => {
     setFilteredLogs(logs); // Initialize filteredLogs with all logs when logs change
@@ -81,9 +89,9 @@ const MainContent = ({ activeItem, toggleLogs, onMenuItemClick }) => {
   
   
  
-  const handleDateChange = (date) => {
-    setSelectedDate(date);
-  };
+  // const handleDateChange = (date) => {
+  //   setSelectedDate(date);
+  // };
  
   const highlightSearch = (text, query) => {
     // Split the query into individual terms
@@ -107,12 +115,29 @@ const MainContent = ({ activeItem, toggleLogs, onMenuItemClick }) => {
       }
     });
   };
+
+
+  // Function to analyze recurring errors
+  const analyzeRecurringErrors = (logList) => {
+    const errorCount = {};
+
+    logList.forEach((log) => {
+      const message = splitLogLine(log.line)[5]; // Assume the log message is in `log.line`.
+      if (!errorCount[message]) {
+        errorCount[message] = 0;
+      }
+      errorCount[message]++;
+    });
+
+    // Filter errors that occur more than once
+    const recurring = Object.entries(errorCount)
+      .filter(([_, count]) => count > 1)
+      .map(([message, count]) => ({ message, count }));
+
+    setRecurringErrors(recurring);
+  };
   
   
-  
-  
-  
- 
   const handleGroupClick = (groupName) => {
     setActiveApplication(groupName);
     setShowExtraCard(true);
@@ -138,7 +163,28 @@ const MainContent = ({ activeItem, toggleLogs, onMenuItemClick }) => {
       {activeItem === "Dashboard" && (
         <>        
           <div className="flex flex-row space-x-4 mb-4 h-[40vh]">
-            <Card height= "h-full" width="w-full" />
+            <Card height= "h-full" width="w-full">
+              <div className="font-bold text-xl mb-2">Recurring Errors</div>
+              <div className="flex flex-col space-y-2">
+                {recurringErrors.length > 0 ? (
+                  recurringErrors.map((error, index) => (
+                    <div
+                      key={index}
+                      className="border border-gray-300 p-2 rounded"
+                    >
+                      <p>
+                        <strong>Message:</strong> {error.message}
+                      </p>
+                      <p>
+                        <strong>Occurrences:</strong> {error.count}
+                      </p>
+                    </div>
+                  ))
+                ) : (
+                  <p>No recurring errors found.</p>
+                )}
+              </div>
+          </Card>
             <Card height="h-full" width="w-full" />
           </div>
      
@@ -185,8 +231,20 @@ const MainContent = ({ activeItem, toggleLogs, onMenuItemClick }) => {
                     {item.groupName}
                   </button>
  
-                  {/* Empty Status Column */}
-                  <div></div>
+                  {/* Status Icon */}
+                  <div className="flex justify-center items-center">
+                    {item.status ? (
+                      <p className="text-3xl bg-green-500 rounded-full w-9 h-9 flex items-center justify-center">
+                      <HiCheck />
+                      </p>
+                    ) : (
+                      <p className="text-3xl bg-red-500 rounded-full w-9 h-9 flex items-center justify-center">
+                        <HiXMark />
+                      </p>
+                    )
+                    }
+                    
+                  </div>
  
                   {/* Last Modified Date */}
                   <div className="text-right">
@@ -217,7 +275,7 @@ const MainContent = ({ activeItem, toggleLogs, onMenuItemClick }) => {
                   <div key={index} className="grid grid-cols-3 gap-4 items-center">
                     {/* Log File Button */}
                     <button
-                      className="bg-gray-300 text-black px-4 py-2 rounded hover:bg-blue-600 text-center overflow-hidden"
+                      className="bg-gray-300 text-black px-4 py-2 rounded hover:bg-blue-600 text-left overflow-hidden w-auto"
                       onClick={() => {
                         onMenuItemClick("Logs");
                         handleLogFileClick(file.filename);
